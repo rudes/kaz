@@ -1,0 +1,7 @@
+bot:
+    build: .
+    restart: always
+    volumes:
+        - '/var/log:/var/log'
+    environment:
+        - DISCORD_BOTKEY=${DISCORD_BOTKEY}
