@@ -21,27 +21,22 @@ async def on_ready():
 
 @bot.event
 async def on_member_update(before,after):
+    if after.game is None:
+        await bot.remove_roles(after, live_role, )
+        return
+    if after.game.type != 1:
+        await bot.remove_roles(after, live_role, )
+        return
     correct_role = False
-    live_role_exists = False
     for role in after.roles:
         if role.name == "Twitch Subscriber":
             correct_role = True
-        if role.name == "Live":
-            live_role_exists = True
     if not correct_role:
-        return
-    if after.game is None:
         return
     live_role = None
     for role in after.server.roles:
         if role.name == "Live":
             live_role = role
-    if after.game.type != 1:
-        if live_role_exists:
-            await bot.remove_roles(after, live_role, )
-            return
-    if live_role_exists:
-        return
     if live_role is not None:
         await bot.add_roles(after, live_role, )
 
