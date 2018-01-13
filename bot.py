@@ -25,6 +25,7 @@ async def on_member_update(before,after):
     for role in after.server.roles:
         if role.name == "Live":
             live_role = role
+            break
     if after.game is None:
         await bot.remove_roles(after, live_role, )
         return
@@ -38,6 +39,7 @@ async def on_member_update(before,after):
     if not correct_role:
         return
     await bot.add_roles(after, live_role, )
+    return
 
 
 bot.run(str(os.environ['DISCORD_BOTKEY']))
