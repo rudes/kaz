@@ -21,6 +21,10 @@ async def on_ready():
 
 @bot.event
 async def on_member_update(before,after):
+    live_role = None
+    for role in after.server.roles:
+        if role.name == "Live":
+            live_role = role
     if after.game is None:
         await bot.remove_roles(after, live_role, )
         return
@@ -33,10 +37,6 @@ async def on_member_update(before,after):
             correct_role = True
     if not correct_role:
         return
-    live_role = None
-    for role in after.server.roles:
-        if role.name == "Live":
-            live_role = role
     if live_role is not None:
         await bot.add_roles(after, live_role, )
 
