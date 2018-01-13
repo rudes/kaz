@@ -1,25 +1,18 @@
 import os
 import logging
 import discord
-from discord.ext import commands
+
+client = discord.Client()
 
 logging.basicConfig(format="%(asctime)s %(name)s:%(levelname)-8s %(message)s",
         filename="/var/log/snakebot.log", level=logging.INFO)
 
-class Snake:
-    def __init__(self, bot):
-        self.bot = bot
-
-bot = commands.Bot(command_prefix=commands.when_mentioned_or('!'),
-        description="Snake Bot")
-bot.add_cog(Snake(bot))
-
-@bot.event
+@client.event
 async def on_ready():
-    await bot.change_presence(game=discord.Game(name="snakED"))
-    logging.info('on_ready,{},presence state set'.format(bot.user.name))
+    await client.change_presence(game=discord.Game(name="snakED"))
+    logging.info('on_ready,{},presence state set'.format(client.user.name))
 
-@bot.event
+@client.event
 async def on_member_update(before,after):
     live_role = None
     for role in after.server.roles:
@@ -27,10 +20,12 @@ async def on_member_update(before,after):
             live_role = role
             break
     if after.game is None:
-        await bot.remove_roles(after, live_role, )
+        await client.remove_roles(after, live_role, )
+        logging.info("removing role from {}, no game".format(after.name))
         return
     if after.game.type != 1:
-        await bot.remove_roles(after, live_role, )
+        await client.remove_roles(after, live_role, )
+        logging.info("removing role from {}, not streaming".format(after.name))
         return
     correct_role = False
     for role in after.roles:
@@ -38,8 +33,10 @@ async def on_member_update(before,after):
             correct_role = True
     if not correct_role:
         return
-    await bot.add_roles(after, live_role, )
-    return
+    if after.game.type == 1:
+        await client.add_roles(after, live_role, )
+        logging.info("adding role from {}".format(after.name))
+        return
 
 
-bot.run(str(os.environ['DISCORD_BOTKEY']))
+client.run(str(os.environ['DISCORD_BOTKEY']))
