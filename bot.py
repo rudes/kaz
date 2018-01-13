@@ -19,19 +19,28 @@ async def on_member_update(before,after):
         if role.name == "Live":
             live_role = role
             break
+    live_role_exists = False
+    for role in after.roles:
+        if role.name == "Live":
+            live_role_exists = True
+            break
     if after.game is None:
-        await client.remove_roles(after, live_role, )
-        logging.info("removing role from {}, no game".format(after.name))
+        if live_role_exists:
+            await client.remove_roles(after, live_role, )
+            logging.info("removing role from {}, no game".format(after.name))
         return
     if after.game.type != 1:
-        await client.remove_roles(after, live_role, )
-        logging.info("removing role from {}, not streaming".format(after.name))
+        if live_role_exists:
+            await client.remove_roles(after, live_role, )
+            logging.info("removing role from {}, not streaming".format(after.name))
         return
     correct_role = False
     for role in after.roles:
         if role.name == "Twitch Subscriber":
             correct_role = True
     if not correct_role:
+        return
+    if live_role_exists:
         return
     if after.game.type == 1:
         await client.add_roles(after, live_role, )
