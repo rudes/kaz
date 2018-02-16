@@ -47,5 +47,37 @@ async def on_member_update(before,after):
         logging.info("adding role from {}".format(after.name))
         return
 
+@client.event
+async def on_message(m):
+    if m.author == client.user:
+        return
+    if m.content == "F":
+        await f_handler(m)
+        return
+    if m.content == "^":
+        await carot_handler(m)
+        return
+
+async def f_handler(m):
+    if !lock_handler():
+        return
+    await client.send_message(m.channel, "F")
+
+async def carot_handler(m):
+    if !lock_handler():
+        return
+    await client.send_message(m.channel, "^")
+
+def lock_handler():
+    lockFile = "/tmp/.kazlock"
+    if os.path.isfile(lockFile):
+        fileTime = os.path.getmtime(lockFile)
+        if (time.time() - fileTime >= 120):
+            os.remove(lockFile)
+            os.create(lockFile)
+            return True
+        return False
+    os.create(lockFile)
+    return True
 
 client.run(str(os.environ['DISCORD_BOTKEY']))
