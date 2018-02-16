@@ -59,12 +59,12 @@ async def on_message(m):
         return
 
 async def f_handler(m):
-    if !lock_handler():
+    if not lock_handler():
         return
     await client.send_message(m.channel, "F")
 
 async def carot_handler(m):
-    if !lock_handler():
+    if not lock_handler():
         return
     await client.send_message(m.channel, "^")
 
