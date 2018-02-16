@@ -74,10 +74,12 @@ def lock_handler():
         fileTime = os.path.getmtime(lockFile)
         if (time.time() - fileTime >= 120):
             os.remove(lockFile)
-            os.create(lockFile)
+            f = open(lockFile, 'w+')
+            f.close()
             return True
         return False
-    os.create(lockFile)
+    f = open(lockFile, 'w+')
+    f.close()
     return True
 
 client.run(str(os.environ['DISCORD_BOTKEY']))
