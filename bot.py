@@ -58,6 +58,9 @@ async def on_message(m):
     if m.content == "^":
         await carot_handler(m)
         return
+    if m.content.lower() == "beep":
+        await beep_handler(m)
+        return
 
 async def f_handler(m):
     if not lock_handler():
@@ -68,6 +71,11 @@ async def carot_handler(m):
     if not lock_handler():
         return
     await client.send_message(m.channel, "^")
+
+async def beep_handler(m):
+    if not lock_handler():
+        return
+    await client.send_message(m.channel, "BOOP")
 
 def lock_handler():
     lockFile = "/tmp/.kazlock"
