@@ -61,6 +61,14 @@ async def on_message(m):
     if m.content.lower() == "beep":
         await beep_handler(m)
         return
+    if "sub role" in m.content.lower():
+        await sub_handler(m)
+        return
+
+async def sub_handler(m):
+    if not lock_handler():
+        return
+    await client.send_message(m.channel, m.author.mention+" to receieve the Subscribers Role please link your twitch account to discord (Settings > Connections > Twitch Icon) and wait 30 minutes to an hour.")
 
 async def f_handler(m):
     if not lock_handler():
