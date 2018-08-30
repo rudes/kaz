@@ -64,6 +64,12 @@ async def on_message(m):
     if "sub role" in m.content.lower():
         await sub_handler(m)
         return
+    if "sub tag" in m.content.lower():
+        await sub_handler(m)
+        return
+    if m.content == "!subrole":
+        await sub_handler(m)
+        return
 
 async def sub_handler(m):
     if not lock_handler():
