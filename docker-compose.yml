@@ -5,3 +5,4 @@ bot:
         - '/var/log:/var/log'
     environment:
         - DISCORD_BOTKEY=${DISCORD_BOTKEY}
+        - TWITCH_APIKEY=${TWITCH_APIKEY}
