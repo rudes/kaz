@@ -102,7 +102,7 @@ async def esports_background_task():
                     name="meta-discussion", topic="Discussion around the meta of the game")
         else:
             await client.edit_channel(esportsChannel,
-                    name="esports", "https://twitch.tv/Rainbow6")
+                    name="esports", topic="https://twitch.tv/Rainbow6")
         await asyncio.sleep(3600)
 
 def lock_handler():
