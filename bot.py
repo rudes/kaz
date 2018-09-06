@@ -100,7 +100,7 @@ async def esports_background_task():
         if r.json()["stream"] is None:
             await client.edit_channel(esportsChannel,
                     name="meta-discussion", topic="Discussion around the meta of the game")
-        else
+        else:
             await client.edit_channel(esportsChannel,
                     name="esports", "https://twitch.tv/Rainbow6")
         await asyncio.sleep(3600)
