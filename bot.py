@@ -1,4 +1,5 @@
 import os
+import urllib.request
 import time
 import logging
 import discord
