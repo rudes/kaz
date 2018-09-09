@@ -103,7 +103,7 @@ async def esports_background_task():
         if r.json()["data"]:
             await client.edit_channel(esportsChannel,
                     name="esports", topic="https://twitch.tv/Rainbow6")
-            logging.info("Changing channel to #esports".)
+            logging.info("Changing channel to #esports")
         else:
             await client.edit_channel(esportsChannel,
                     name="meta-discussion", topic="Discussion around the meta of the game")
