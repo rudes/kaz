@@ -76,6 +76,7 @@ async def on_message(m):
 async def sub_handler(m):
     if not lock_handler():
         return
+    logging.info("{} requested sub role".format(m.author.name))
     await client.send_message(m.channel, m.author.mention+" to receieve the Subscribers Role please link your twitch account to discord (Settings > Connections > Twitch Icon) and wait 30 minutes to an hour.")
 
 async def f_handler(m):
@@ -102,9 +103,11 @@ async def esports_background_task():
         if r.json()["data"]:
             await client.edit_channel(esportsChannel,
                     name="esports", topic="https://twitch.tv/Rainbow6")
+            logging.info("Changing channel to #esports".)
         else:
             await client.edit_channel(esportsChannel,
                     name="meta-discussion", topic="Discussion around the meta of the game")
+            logging.info("Changing channel to #meta-discussion".)
         await asyncio.sleep(3600)
 
 def lock_handler():
