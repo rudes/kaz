@@ -69,7 +69,7 @@ async def on_message(m):
     if "sub tag" in m.content.lower():
         await sub_handler(m)
         return
-    if m.content == "!subrole":
+    if "!subrole" in m.content.lower():
         await sub_handler(m)
         return
 
