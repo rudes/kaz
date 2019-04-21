@@ -13,42 +13,11 @@ logging.basicConfig(format="%(asctime)s %(name)s:%(levelname)-8s %(message)s",
 @client.event
 async def on_ready():
     await client.change_presence(game=discord.Game(name="snakED"))
-    logging.info('on_ready,{},presence state set'.format(client.user.name))
+    logging.info('on_ready,{0.user},presence state set'.format(client))
 
 @client.event
 async def on_member_update(before,after):
-    live_role = None
-    for role in after.server.roles:
-        if role.name == "Live":
-            live_role = role
-            break
-    live_role_exists = False
-    for role in after.roles:
-        if role.name == "Live":
-            live_role_exists = True
-            break
-    if after.game is None:
-        if live_role_exists:
-            await client.remove_roles(after, live_role, )
-            logging.info("removing role from {}, no game".format(after.name))
-        return
-    if after.game.type != 1:
-        if live_role_exists:
-            await client.remove_roles(after, live_role, )
-            logging.info("removing role from {}, not streaming".format(after.name))
-        return
-    correct_role = False
-    for role in after.roles:
-        if role.name == "Twitch Subscriber":
-            correct_role = True
-    if not correct_role:
-        return
-    if live_role_exists:
-        return
-    if after.game.type == 1:
-        await client.add_roles(after, live_role, )
-        logging.info("adding role from {}".format(after.name))
-        return
+    await live_handler(after)
 
 @client.event
 async def on_message(m):
@@ -72,27 +41,59 @@ async def on_message(m):
     if "!subrole" in m.content.lower():
         await sub_handler(m)
         return
+    if m.content == "!sync":
+        await sync_handler(m)
+        return
+
+async def sync_handler(m):
+    for user in m.guild.members:
+        await live_handler(user)
+
+async def live_handler(after):
+    live_role = after.server.get_role(399778773265940481)
+    live_role_exists = False
+    for role in after.roles:
+        if role == live_role:
+            live_role_exists = True
+            break
+    if discord.Streaming not in after.activies:
+        if live_role_exists:
+            await after.remove_roles(live_role, )
+            logging.info("removing role from {}, no game".format(after.name))
+        return
+    correct_role = False
+    for role in after.roles:
+        if role.id == "398984088104730624":
+            correct_role = True
+    if not correct_role:
+        return
+    if live_role_exists:
+        return
+    if discord.Streaming in after.activities:
+        await after.add_roles(live_role, )
+        logging.info("adding role from {}".format(after.name))
+        return
 
 async def sub_handler(m):
     if not lock_handler():
         return
     logging.info("{} requested sub role".format(m.author.name))
-    await client.send_message(m.channel, m.author.mention+" to receieve the Subscribers Role please link your twitch account to discord (Settings > Connections > Twitch Icon) and wait 30 minutes to an hour.")
+    await m.channel.send(m.author.mention+" to receieve the Subscribers Role please link your twitch account to discord (Settings > Connections > Twitch Icon) and wait 30 minutes to an hour.")
 
 async def f_handler(m):
     if not lock_handler():
         return
-    await client.send_message(m.channel, "F")
+    await m.channel.send("F")
 
 async def carot_handler(m):
     if not lock_handler():
         return
-    await client.send_message(m.channel, "^")
+    await m.channel.send("^")
 
 async def beep_handler(m):
     if not lock_handler():
         return
-    await client.send_message(m.channel, "BOOP")
+    await m.channel.send("BOOP")
 
 async def esports_background_task():
     await client.wait_until_ready()
@@ -101,12 +102,12 @@ async def esports_background_task():
         r = requests.get("https://api.twitch.tv/helix/streams?user_login=Rainbow6",
                 headers={'Client-ID': str(os.environ['TWITCH_APIKEY'])})
         if r.json()["data"]:
-            await client.edit_channel(esportsChannel,
-                    name="esports", topic="https://twitch.tv/Rainbow6")
+            await esportsChannel.edit(name="esports",
+                    topic="https://twitch.tv/Rainbow6")
             logging.info("Changing channel to #esports")
         else:
-            await client.edit_channel(esportsChannel,
-                    name="meta-discussion", topic="Discussion around the meta of the game")
+            await esportsChannel.edit(name="meta-discussion",
+                    topic="Discussion around the meta of the game")
             logging.info("Changing channel to #meta-discussion")
         await asyncio.sleep(3600)
 
