@@ -50,7 +50,7 @@ async def sync_handler(m):
         await live_handler(user)
 
 async def live_handler(after):
-    live_role = after.server.get_role(399778773265940481)
+    live_role = after.guild.get_role(399778773265940481)
     live_role_exists = False
     for role in after.roles:
         if role == live_role:
