@@ -12,7 +12,7 @@ logging.basicConfig(format="%(asctime)s %(name)s:%(levelname)-8s %(message)s",
 
 @client.event
 async def on_ready():
-    await client.change_presence(game=discord.Game(name="snakED"))
+    await client.change_presence(activity=discord.Game(name="snakED"))
     logging.info('on_ready,{0.user},presence state set'.format(client))
 
 @client.event
