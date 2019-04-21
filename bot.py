@@ -56,7 +56,7 @@ async def live_handler(after):
         if role == live_role:
             live_role_exists = True
             break
-    if discord.Streaming not in after.activies:
+    if discord.Streaming not in after.activities:
         if live_role_exists:
             await after.remove_roles(live_role, )
             logging.info("removing role from {}, no game".format(after.name))
