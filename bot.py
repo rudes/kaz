@@ -44,6 +44,9 @@ async def on_message(m):
     if m.content == "!sync":
         await sync_handler(m)
         return
+    if m.content == "!activities":
+        await m.channel.send(m.author.activities)
+        return
 
 async def sync_handler(m):
     for user in m.guild.members:
