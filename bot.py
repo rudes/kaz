@@ -58,7 +58,7 @@ async def live_handler(after):
             break
     streaming = False
     for act in after.activities:
-        loging.info(act.type)
+        logging.info(act.type)
         if act.type == discord.ActivityType.streaming:
             streaming = True
             break
