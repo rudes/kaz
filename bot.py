@@ -56,13 +56,13 @@ async def live_handler(after):
         if role == live_role:
             live_role_exists = True
             break
-    streaming = False
+    live_streaming = False
     for act in after.activities:
         logging.info(act.type)
-        if act.type == discord.ActivityType.streaming:
-            streaming = True
+        if act.type == ActivityType.streaming:
+             live_streaming = True
             break
-    if not streaming:
+    if not  live_streaming:
         if live_role_exists:
             await after.remove_roles(live_role, )
             logging.info("removing role from {}, no game".format(after.name))
@@ -75,7 +75,7 @@ async def live_handler(after):
         return
     if live_role_exists:
         return
-    if streaming:
+    if  live_streaming:
         await after.add_roles(live_role, )
         logging.info("adding role from {}".format(after.name))
         return
