@@ -57,9 +57,10 @@ async def live_handler(after):
             live_role_exists = True
             break
     live_streaming = False
+    logging.info(discord.ActivityType.streaming)
     for act in after.activities:
         logging.info(act.type)
-        if act.type == ActivityType.streaming:
+        if act.type == discord.ActivityType.streaming:
             live_streaming = True
             break
     if not  live_streaming:
