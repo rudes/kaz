@@ -46,8 +46,11 @@ async def on_message(m):
         return
 
 async def sync_handler(m):
+    userCount = 0
     for user in m.guild.members:
+        userCount += 1
         await live_handler(user)
+    logging.info("sync_handler,syncing {} users".format(userCount))
 
 async def live_handler(after):
     live_role = after.guild.get_role(399778773265940481)
@@ -64,7 +67,8 @@ async def live_handler(after):
     if not  live_streaming:
         if live_role_exists:
             await after.remove_roles(live_role, )
-            logging.info("removing role from {}, no game".format(after.name))
+            logging.info("live_handler,removing role from {}, not steraming"
+                    .format(after.name))
         return
     sub_role = False
     for role in after.roles:
@@ -76,7 +80,7 @@ async def live_handler(after):
         return
     if  live_streaming:
         await after.add_roles(live_role, )
-        logging.info("adding role from {}".format(after.name))
+        logging.info("live_handler,adding role to {}".format(after.name))
         return
 
 async def sub_handler(m):
