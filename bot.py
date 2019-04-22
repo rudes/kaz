@@ -44,9 +44,6 @@ async def on_message(m):
     if m.content == "!sync":
         await sync_handler(m)
         return
-    if m.content == "!activities":
-        await m.channel.send(m.author.activities)
-        return
 
 async def sync_handler(m):
     for user in m.guild.members:
@@ -59,20 +56,25 @@ async def live_handler(after):
         if role == live_role:
             live_role_exists = True
             break
-    if discord.Streaming not in after.activities:
+    streaming = False
+    for act in after.activities:
+        if act.type == discord.ActivityType.streaming:
+            streaming = True
+            break
+    if not streaming:
         if live_role_exists:
             await after.remove_roles(live_role, )
             logging.info("removing role from {}, no game".format(after.name))
         return
-    correct_role = False
+    sub_role = False
     for role in after.roles:
         if role.id == "398984088104730624":
-            correct_role = True
-    if not correct_role:
+            sub_role = True
+    if not sub_role:
         return
     if live_role_exists:
         return
-    if discord.Streaming in after.activities:
+    if streaming:
         await after.add_roles(live_role, )
         logging.info("adding role from {}".format(after.name))
         return
