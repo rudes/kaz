@@ -60,7 +60,7 @@ async def live_handler(after):
     for act in after.activities:
         logging.info(act.type)
         if act.type == ActivityType.streaming:
-             live_streaming = True
+            live_streaming = True
             break
     if not  live_streaming:
         if live_role_exists:
