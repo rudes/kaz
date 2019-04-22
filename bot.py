@@ -57,9 +57,7 @@ async def live_handler(after):
             live_role_exists = True
             break
     live_streaming = False
-    logging.info(discord.ActivityType.streaming)
     for act in after.activities:
-        logging.info(act.type)
         if act.type == discord.ActivityType.streaming:
             live_streaming = True
             break
@@ -70,7 +68,7 @@ async def live_handler(after):
         return
     sub_role = False
     for role in after.roles:
-        if role.id == "398984088104730624":
+        if role.id == 398984088104730624:
             sub_role = True
     if not sub_role:
         return
