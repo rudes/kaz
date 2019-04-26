@@ -1,9 +1,10 @@
 import os
-import requests
 import time
+import random
 import asyncio
 import logging
 import discord
+import requests
 
 client = discord.Client()
 
@@ -44,13 +45,42 @@ async def on_message(m):
     if m.content == "!sync":
         await sync_handler(m)
         return
+    if m.content == "!subgame":
+        await subgame_handler(m)
+        return
+
+async def subgame_handler(m):
+    if not m.author.guild_permissions.administrator:
+        return
+    logging.info("subgame_handler,{0.name},initiated sub game".format(m.author))
+    hell = m.guild.get_channel(474459619507437568)
+    blue = m.guild.get_channel(401548211699056641)
+    orange = m.guild.get_channel(401548330653450240)
+    wait_room = m.guild.get_channel(447261271557931008)
+    if len(wait_room.members) < 9:
+        await m.channel.send("Not enough players.")
+        return
+    for blue_player in blue.members:
+        await blue_player.move_to(hell)
+    for orange_player in orange.members:
+        await orange_player.move_to(hell)
+    for x in range(9):
+        player = wait_room.members[random.randint(0,len(wait_room.members))]
+        if player is None:
+            return
+        if x % 2 == 0:
+            logging.info("subgame_handler,{0.name},moved to orange".format(player))
+            await player.move_to(orange)
+        else:
+            logging.info("subgame_handler,{0.name},moved to blue".format(player))
+            await player.move_to(blue)
 
 async def sync_handler(m):
     userCount = 0
     for user in m.guild.members:
         userCount += 1
         await live_handler(user)
-    logging.info("sync_handler,syncing {} users".format(userCount))
+    logging.info("sync_handler,synced {} users".format(userCount))
 
 async def live_handler(after):
     live_role = after.guild.get_role(399778773265940481)
