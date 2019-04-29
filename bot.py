@@ -136,7 +136,7 @@ async def beep_handler(m):
 
 async def esports_background_task():
     await client.wait_until_ready()
-    esportsChannel = client.get_channel("406591301790859274")
+    esportsChannel = client.get_channel(406591301790859274)
     while not client.is_closed:
         r = requests.get("https://api.twitch.tv/helix/streams?user_login=Rainbow6",
                 headers={'Client-ID': str(os.environ['TWITCH_APIKEY'])})
