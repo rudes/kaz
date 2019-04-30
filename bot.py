@@ -33,6 +33,12 @@ async def on_message(m):
     if m.content.lower() == "beep":
         await beep_handler(m)
         return
+    if m.content.lower() == "!sync":
+        await sync_handler(m)
+        return
+    if m.content.lower() == "!subgame":
+        await subgame_handler(m)
+        return
     if "sub role" in m.content.lower():
         await sub_handler(m)
         return
@@ -41,12 +47,6 @@ async def on_message(m):
         return
     if "!subrole" in m.content.lower():
         await sub_handler(m)
-        return
-    if m.content == "!sync":
-        await sync_handler(m)
-        return
-    if m.content == "!subgame":
-        await subgame_handler(m)
         return
 
 async def subgame_handler(m):
@@ -148,7 +148,7 @@ async def esports_background_task():
             await esportsChannel.edit(name="meta-discussion",
                     topic="Discussion around the meta of the game")
             logging.info("Changing channel to #meta-discussion")
-        await asyncio.sleep(3600)
+        await asyncio.sleep(300)
 
 def lock_handler():
     lockFile = "/tmp/.kazlock"
