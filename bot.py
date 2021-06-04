@@ -6,7 +6,9 @@ import logging
 import discord
 import requests
 
-client = discord.Client()
+intents = discord.Intents.default()
+intents.members = True
+client = discord.Client(intents=intents)
 
 logging.basicConfig(format="%(asctime)s %(name)s:%(levelname)-8s %(message)s",
         filename="/var/log/snakebot.log", level=logging.INFO)
@@ -36,9 +38,6 @@ async def on_message(m):
     if m.content.lower() == "!sync":
         await sync_handler(m)
         return
-    if m.content.lower() == "!subgame":
-        await subgame_handler(m)
-        return
     if "sub role" in m.content.lower():
         await sub_handler(m)
         return
@@ -48,32 +47,6 @@ async def on_message(m):
     if "!subrole" in m.content.lower():
         await sub_handler(m)
         return
-
-async def subgame_handler(m):
-    if not m.author.guild_permissions.administrator:
-        return
-    logging.info("subgame_handler,{0.name},initiated sub game".format(m.author))
-    hell = m.guild.get_channel(474459619507437568)
-    blue = m.guild.get_channel(401548211699056641)
-    orange = m.guild.get_channel(401548330653450240)
-    wait_room = m.guild.get_channel(447261271557931008)
-    if len(wait_room.members) < 9:
-        await m.channel.send("Not enough players.")
-        return
-    for blue_player in blue.members:
-        await blue_player.move_to(hell)
-    for orange_player in orange.members:
-        await orange_player.move_to(hell)
-    for x in range(9):
-        player = wait_room.members[random.randint(0,len(wait_room.members))]
-        if player is None:
-            return
-        if x % 2 == 0:
-            logging.info("subgame_handler,{0.name},moved to orange".format(player))
-            await player.move_to(orange)
-        else:
-            logging.info("subgame_handler,{0.name},moved to blue".format(player))
-            await player.move_to(blue)
 
 async def sync_handler(m):
     userCount = 0
@@ -139,7 +112,7 @@ async def esports_background_task():
     esportsChannel = client.get_channel(406591301790859274)
     while not client.is_closed:
         r = requests.get("https://api.twitch.tv/helix/streams?user_login=Rainbow6",
-                headers={'Client-ID': str(os.environ['TWITCH_APIKEY'])})
+                headers={'Client-ID': str(os.environ['TWITCH_APIKEY']), 'Authorization': 'Bearer '+str(os.environ['TWITCH_AUTHKEY'])})
         if r.json()["data"]:
             await esportsChannel.edit(name="esports",
                     topic="https://twitch.tv/Rainbow6")
