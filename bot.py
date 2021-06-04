@@ -14,8 +14,8 @@ client = discord.Client(intents=intents)
 logging.basicConfig(format="%(asctime)s %(name)s:%(levelname)-8s %(message)s", filename="/var/log/snakebot.log")
 log = logging.getLogger(__name__)
 log.setLevel(logging.INFO)
-discord_log = logging.getLogger(discord)
-discord_log.setLevel(logging.INFO)
+discord_log = logging.getLogger('discord')
+discord_log.setLevel(logging.WARNING)
 
 @client.event
 async def on_ready():
