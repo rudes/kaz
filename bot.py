@@ -8,6 +8,7 @@ import requests
 
 intents = discord.Intents.default()
 intents.members = True
+intents.presence = True
 client = discord.Client(intents=intents)
 
 logging.basicConfig(format="%(asctime)s %(name)s:%(levelname)-8s %(message)s",
@@ -53,6 +54,7 @@ async def sync_handler(m):
     for user in m.guild.members:
         userCount += 1
         await live_handler(user)
+    await m.delete()
     logging.info("sync_handler,synced {} users".format(userCount))
 
 async def live_handler(after):
@@ -70,7 +72,7 @@ async def live_handler(after):
     if not  live_streaming:
         if live_role_exists:
             await after.remove_roles(live_role, )
-            logging.info("live_handler,removing role from {}, not steraming"
+            logging.info("live_handler,removing role from {}, not streaming"
                     .format(after.name))
         return
     sub_role = False
