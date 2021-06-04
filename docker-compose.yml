@@ -6,3 +6,4 @@ bot:
     environment:
         - DISCORD_BOTKEY=${DISCORD_BOTKEY}
         - TWITCH_APIKEY=${TWITCH_APIKEY}
+        - TWITCH_AUTHKEY=${TWITCH_AUTHKEY}
