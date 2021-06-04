@@ -8,7 +8,7 @@ import requests
 
 intents = discord.Intents.default()
 intents.members = True
-intents.presence = True
+intents.presences = True
 client = discord.Client(intents=intents)
 
 logging.basicConfig(format="%(asctime)s %(name)s:%(levelname)-8s %(message)s",
