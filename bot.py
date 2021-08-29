@@ -5,6 +5,7 @@ import asyncio
 import logging
 import discord
 import requests
+import urllib.request
 
 intents = discord.Intents.default()
 intents.members = True
@@ -51,6 +52,38 @@ async def on_message(m):
     if "!subrole" in m.content.lower():
         await sub_handler(m)
         return
+    if m.channel.type == discord.ChannelType.private:
+        if not m.content.startswith('!clip'):
+            return
+        await pm_handler(m)
+        return
+
+async def pm_handler(m):
+    try:
+        basepath = '/mnt/kaz/media/clips'
+        clip_id = m.content.split()[1]
+        r = requests.get('https://api.twitch.tv/helix/clips?id={0}'.format(clip_id),
+                         headers={
+                             'Client-ID': str(os.environ['TWITCH_APIKEY']),
+                             'Authorization': 'Bearer '+str(os.environ['TWITCH_AUTHKEY']),
+                             })
+
+        if not r.json()['data']:
+            return
+        thumb_url = r.json()['data'][0]['thumbnail_url']
+        video_url = '{0}.mp4'.format(thumb_url.split('-preview',1)[0])
+        file_name = '{0}-{1}.mp4'.format(r.json()['data'][0]['title'], clip_id)
+        outfile_path = '{0}/{1}'.format(basepath, file_name)
+
+        if not os.path.exists(basepath):
+            os.makedirs(basepath)
+
+        urllib.request.urlretrieve(video_url, outfile_path)
+
+        await m.channel.send('video **{0}** saved'.format(r.json()['data'][0]['title']))
+    except Exception as e:
+        log.error('{0} error occured, {1}'.format(type(e), e))
+    return
 
 async def sync_handler(m):
     userCount = 0
