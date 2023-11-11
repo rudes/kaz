@@ -1,17 +1,17 @@
 import os
 import time
-import asyncio
 import logging
-import urllib.request
 import discord
-import requests
 
 intents = discord.Intents.default()
 intents.members = True
 intents.presences = True
 client = discord.Client(intents=intents)
 
-logging.basicConfig(format="%(asctime)s %(name)s:%(levelname)-8s %(message)s", filename="/var/log/snakebot.log")
+logging.basicConfig(
+    format="%(asctime)s %(name)s:%(levelname)-8s %(message)s",
+    filename="/var/log/snakebot.log",
+)
 log = logging.getLogger(__name__)
 log.setLevel(logging.INFO)
 discord_log = logging.getLogger('discord')
@@ -31,13 +31,19 @@ async def on_message(m):
     if m.author == client.user:
         return
     if m.content == "F":
-        await f_handler(m)
+        if not lock_handler():
+            return
+        await m.channel.send("F")
         return
     if m.content == "^":
-        await carot_handler(m)
+        if not lock_handler():
+            return
+        await m.channel.send("^")
         return
     if m.content.lower() == "beep":
-        await beep_handler(m)
+        if not lock_handler():
+            return
+        await m.channel.send("BOOP")
         return
     if m.content.lower() == "!sync":
         await sync_handler(m)
@@ -51,6 +57,26 @@ async def on_message(m):
     if "!subrole" in m.content.lower():
         await sub_handler(m)
         return
+
+async def sub_handler(m):
+    if not lock_handler():
+        return
+    log.info("{} requested sub role".format(m.author.name))
+    await m.channel.send(f"{m.author.mention} to receieve the Subscribers Role please link your twitch account to discord (Settings > Connections > Twitch Icon) and wait 30 minutes to an hour.")
+
+def lock_handler():
+    lockFile = "/tmp/.kazlock"
+    if os.path.isfile(lockFile):
+        fileTime = os.path.getmtime(lockFile)
+        if (time.time() - fileTime >= 120):
+            os.remove(lockFile)
+            f = open(lockFile, 'w+')
+            f.close()
+            return True
+        return False
+    f = open(lockFile, 'w+')
+    f.close()
+    return True
 
 async def sync_handler(m):
     user_count = 0
@@ -91,56 +117,4 @@ async def live_handler(after):
         log.info("live_handler,adding role to {}".format(after.name))
         return
 
-async def sub_handler(m):
-    if not lock_handler():
-        return
-    log.info("{} requested sub role".format(m.author.name))
-    await m.channel.send(m.author.mention+" to receieve the Subscribers Role please link your twitch account to discord (Settings > Connections > Twitch Icon) and wait 30 minutes to an hour.")
-
-async def f_handler(m):
-    if not lock_handler():
-        return
-    await m.channel.send("F")
-
-async def carot_handler(m):
-    if not lock_handler():
-        return
-    await m.channel.send("^")
-
-async def beep_handler(m):
-    if not lock_handler():
-        return
-    await m.channel.send("BOOP")
-
-async def esports_background_task():
-    await client.wait_until_ready()
-    esportsChannel = client.get_channel(406591301790859274)
-    while not client.is_closed:
-        r = requests.get("https://api.twitch.tv/helix/streams?user_login=Rainbow6",
-                headers={'Client-ID': str(os.environ['TWITCH_APIKEY']), 'Authorization': 'Bearer '+str(os.environ['TWITCH_AUTHKEY'])})
-        if r.json()["data"]:
-            await esportsChannel.edit(name="esports",
-                    topic="https://twitch.tv/Rainbow6")
-            log.info("Changing channel to #esports")
-        else:
-            await esportsChannel.edit(name="meta-discussion",
-                    topic="Discussion around the meta of the game")
-            log.info("Changing channel to #meta-discussion")
-        await asyncio.sleep(300)
-
-def lock_handler():
-    lockFile = "/tmp/.kazlock"
-    if os.path.isfile(lockFile):
-        fileTime = os.path.getmtime(lockFile)
-        if (time.time() - fileTime >= 120):
-            os.remove(lockFile)
-            f = open(lockFile, 'w+')
-            f.close()
-            return True
-        return False
-    f = open(lockFile, 'w+')
-    f.close()
-    return True
-
-client.loop.create_task(esports_background_task())
 client.run(str(os.environ['DISCORD_BOTKEY']))
