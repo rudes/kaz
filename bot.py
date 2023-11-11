@@ -1,11 +1,10 @@
 import os
 import time
-import random
 import asyncio
 import logging
+import urllib.request
 import discord
 import requests
-import urllib.request
 
 intents = discord.Intents.default()
 intents.members = True
@@ -54,12 +53,12 @@ async def on_message(m):
         return
 
 async def sync_handler(m):
-    userCount = 0
+    user_count = 0
     for user in m.guild.members:
-        userCount += 1
+        user_count += 1
         await live_handler(user)
     await m.delete()
-    log.info("sync_handler,synced {} users".format(userCount))
+    log.info("sync_handler,synced {} users".format(user_count))
 
 async def live_handler(after):
     live_role = after.guild.get_role(399778773265940481)
