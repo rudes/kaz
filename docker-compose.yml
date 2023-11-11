@@ -3,7 +3,6 @@ bot:
     restart: always
     volumes:
         - '/var/log:/var/log'
-        - '/mnt/kaz:/mnt/kaz'
     environment:
         - DISCORD_BOTKEY=${DISCORD_BOTKEY}
         - TWITCH_APIKEY=${TWITCH_APIKEY}
